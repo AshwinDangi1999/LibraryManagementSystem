@@ -1,52 +1,51 @@
 package com.lms.LibraryManagementSystem.Controller;
 
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.lms.LibraryManagementSystem.Entity.Book;
+import com.lms.LibraryManagementSystem.Entity.Transaction;
 import com.lms.LibraryManagementSystem.Service.BookService;
-
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-
+import com.lms.LibraryManagementSystem.Service.TransactionService;
 
 @RestController
-@RequestMapping("api/v1/")
+@RequestMapping("api/v1")
 public class BookController {
-  
+
   @Autowired
   private BookService bookService;
 
-  @GetMapping("/allbooks")
-  public List<Book> getAllBooks() {
-      return bookService.getAllBooks();
-  }
+  @Autowired
+  private TransactionService transactionService;
   
-  @PostMapping("/addbook")
-  public Book addBook(@RequestBody Book book) {
-      
-      return bookService.addBook(book);
+  @GetMapping("allbooks")
+  public List<Book> getAllBooks(){
+    return bookService.getAllBooks();
   }
 
-  // @PutMapping("updatebook/{id}")
-  // public String updateBook(@PathVariable String id, @RequestBody String entity) {
-  //     //TODO: process PUT request
-      
-  //     return entity;
-  // }
-
-  @DeleteMapping("deletebook/{bookid}")
-  public void deleteBook(@PathVariable String bookid){
-    bookService.deleteBook(bookid);
+  @PostMapping("addbook")
+  public void addBook(@RequestBody Book book){
+    bookService.addBook(book);
   }
-  
-  
+
+  @PostMapping("borrow")
+  public Transaction borrowBook(@RequestParam(name = "userid") Long userId, 
+  @RequestParam(name = "bookid") Long bookId)
+  {
+    System.out.println(userId);
+    return transactionService.borrowBook(userId, bookId);
+  }
+
+  @PostMapping("returnbook/{transactionId}")
+  public Transaction returnBook(@PathVariable Long transactionId){
+    return transactionService.returnBook(transactionId);
+  }
 }
